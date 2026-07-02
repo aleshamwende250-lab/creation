@@ -12,6 +12,57 @@ type BotCategory = 'Advanced Bots' | 'Premium' | 'Even Odd' | 'Normal' | 'Automa
 
 const BOT_CATEGORIES: BotCategory[] = ['Advanced Bots', 'Premium', 'Even Odd', 'Normal', 'Automated', 'Differs'];
 
+const CATEGORY_CONFIG: Record<BotCategory, {
+    badge: string;
+    tagLabel: string;
+    tagColor: string;
+    tagBg: string;
+    cardClass: string;
+}> = {
+    'Advanced Bots': {
+        badge: '⚡',
+        tagLabel: 'Advanced',
+        tagColor: '#a855f7',
+        tagBg: 'rgb(168 85 247 / 12%)',
+        cardClass: 'free-bots__card--advanced',
+    },
+    'Premium': {
+        badge: '👑',
+        tagLabel: 'Premium',
+        tagColor: '#f7a800',
+        tagBg: 'rgb(247 168 0 / 12%)',
+        cardClass: 'free-bots__card--premium',
+    },
+    'Even Odd': {
+        badge: '⚖️',
+        tagLabel: 'Even / Odd',
+        tagColor: '#06b6d4',
+        tagBg: 'rgb(6 182 212 / 12%)',
+        cardClass: 'free-bots__card--evenodd',
+    },
+    'Normal': {
+        badge: '📊',
+        tagLabel: 'Standard',
+        tagColor: '#3b82f6',
+        tagBg: 'rgb(59 130 246 / 12%)',
+        cardClass: 'free-bots__card--normal',
+    },
+    'Automated': {
+        badge: '🤖',
+        tagLabel: 'Auto-Run',
+        tagColor: '#f97316',
+        tagBg: 'rgb(249 115 22 / 12%)',
+        cardClass: 'free-bots__card--automated',
+    },
+    'Differs': {
+        badge: '🎯',
+        tagLabel: 'Differs',
+        tagColor: '#ef4444',
+        tagBg: 'rgb(239 68 68 / 12%)',
+        cardClass: 'free-bots__card--differs',
+    },
+};
+
 const FREE_BOTS = [
     {
         id: 'martingale',
@@ -202,6 +253,7 @@ const FreeBots = observer(() => {
     };
 
     const bots_in_category = FREE_BOTS.filter(bot => bot.category === activeCategory);
+    const activeCfg = CATEGORY_CONFIG[activeCategory];
 
     return (
         <div className='free-bots'>
@@ -214,24 +266,38 @@ const FreeBots = observer(() => {
                 </p>
             </div>
             <div className='free-bots__category-tabs'>
-                {BOT_CATEGORIES.map(category => (
-                    <button
-                        key={category}
-                        className={`free-bots__category-tab${activeCategory === category ? ' free-bots__category-tab--active' : ''}`}
-                        onClick={() => setActiveCategory(category)}
-                    >
-                        {category}
-                    </button>
-                ))}
+                {BOT_CATEGORIES.map(category => {
+                    const cfg = CATEGORY_CONFIG[category];
+                    return (
+                        <button
+                            key={category}
+                            className={`free-bots__category-tab${activeCategory === category ? ' free-bots__category-tab--active' : ''}`}
+                            onClick={() => setActiveCategory(category)}
+                        >
+                            <span className='free-bots__category-tab-badge'>{cfg.badge}</span>
+                            {category}
+                        </button>
+                    );
+                })}
             </div>
             {bots_in_category.length > 0 ? (
                 <div className='free-bots__grid'>
                     {bots_in_category.map(bot => {
                         const is_loading = importing === bot.id;
+                        const cfg = CATEGORY_CONFIG[bot.category];
                         return (
-                            <div key={bot.id} className='free-bots__card'>
-                                <div className='free-bots__card-icon'>
-                                    <LabelPairedCircleStarCaptionBoldIcon height='32px' width='32px' fill='#f7c53b' />
+                            <div key={bot.id} className={`free-bots__card ${cfg.cardClass}`}>
+                                <div className='free-bots__card-icon-row'>
+                                    <div className='free-bots__card-icon'>
+                                        <LabelPairedCircleStarCaptionBoldIcon height='32px' width='32px' fill='#f7c53b' />
+                                    </div>
+                                    <span
+                                        className='free-bots__card-special-tag'
+                                        style={{ color: cfg.tagColor, background: cfg.tagBg, borderColor: cfg.tagColor + '40' }}
+                                    >
+                                        <span>{cfg.badge}</span>
+                                        {cfg.tagLabel}
+                                    </span>
                                 </div>
                                 <div className='free-bots__card-body'>
                                     <div className='free-bots__card-top'>
