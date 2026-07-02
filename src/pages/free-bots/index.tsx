@@ -210,7 +210,7 @@ const FreeBots = observer(() => {
                     <Localize i18n_default_text='Free Bots' />
                 </h2>
                 <p className='free-bots__subtitle'>
-                    <Localize i18n_default_text='Click "Import to Builder" to load any strategy directly into your Bot Builder workspace.' />
+                    <Localize i18n_default_text='Click "LOAD BOT" to load any strategy directly into your Bot Builder workspace.' />
                 </p>
             </div>
             <div className='free-bots__category-tabs'>
@@ -254,7 +254,7 @@ const FreeBots = observer(() => {
                                     {is_loading ? (
                                         <Localize i18n_default_text='Importing…' />
                                     ) : (
-                                        <Localize i18n_default_text='Import to Builder' />
+                                        <Localize i18n_default_text='LOAD BOT' />
                                     )}
                                 </button>
                             </div>
