@@ -85,6 +85,14 @@ const FREE_BOTS = [
         category: 'Premium' as BotCategory,
         difficulty: 'Advanced',
     },
+    {
+        id: 'frosty_even_odd_engine',
+        xml_file: 'frosty_even_odd_engine',
+        name: 'Frosty Even/Odd Engine',
+        description: 'Trades even/odd digit outcomes with martingale recovery, configurable take-profit and stop-loss targets.',
+        category: 'Even Odd' as BotCategory,
+        difficulty: 'Advanced',
+    },
 ];
 
 const DIFFICULTY_COLORS: Record<string, string> = {
