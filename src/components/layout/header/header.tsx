@@ -171,10 +171,31 @@ const AppHeader = observer(() => {
                 !isOAuthPending &&
                 ((!is_account_regenerating && !isAuthorizing && !activeLoginid) || authTimeout)
             ) {
-                // Disable auth buttons until the OAuth app id is configured, so the
-                // click handlers (which would otherwise log "Failed to generate OAuth
-                // URL") never fire. The env-not-set toast explains why.
+                // NEXT_PUBLIC_DERIV_APP_ID is baked in at build time by rsbuild.
+                // If it is empty the OAuth flow cannot work — surface a clear banner
+                // so the issue is immediately visible rather than silently disabled buttons.
                 const isAuthConfigured = Boolean(process.env.NEXT_PUBLIC_DERIV_APP_ID);
+
+                if (!isAuthConfigured) {
+                    return (
+                        <div className='auth-actions auth-actions--unconfigured'>
+                            <span className='auth-actions__warning'>
+                                ⚠️&nbsp;
+                                <strong>App ID not set.</strong>&nbsp;
+                                Add&nbsp;<code>NEXT_PUBLIC_DERIV_APP_ID</code>&nbsp;to your Vercel environment variables,
+                                then redeploy.&nbsp;
+                                <a
+                                    href='https://developers.deriv.com/dashboard/'
+                                    target='_blank'
+                                    rel='noopener noreferrer'
+                                >
+                                    Get an App ID ↗
+                                </a>
+                            </span>
+                        </div>
+                    );
+                }
+
                 return (
                     <div className='auth-actions'>
                         <button
@@ -184,10 +205,10 @@ const AppHeader = observer(() => {
                         >
                             🔑&nbsp;<Localize i18n_default_text='API Token' />
                         </button>
-                        <Button tertiary disabled={!isAuthConfigured} onClick={handleLogin}>
+                        <Button tertiary onClick={handleLogin}>
                             <Localize i18n_default_text='Log in' />
                         </Button>
-                        <Button primary_light disabled={!isAuthConfigured} onClick={handleSignup}>
+                        <Button primary_light onClick={handleSignup}>
                             <Localize i18n_default_text='Sign up' />
                         </Button>
                     </div>
