@@ -239,14 +239,6 @@ const FreeBots = observer(() => {
 
     return (
         <div className='free-bots'>
-            <div className='free-bots__header'>
-                <h2 className='free-bots__title'>
-                    <Localize i18n_default_text='Free Bots' />
-                </h2>
-                <p className='free-bots__subtitle'>
-                    <Localize i18n_default_text='Click "LOAD BOT" to load any strategy directly into your Bot Builder workspace.' />
-                </p>
-            </div>
             <div className='free-bots__category-tabs'>
                 {BOT_CATEGORIES.map(category => {
                     const cfg = CATEGORY_CONFIG[category];
