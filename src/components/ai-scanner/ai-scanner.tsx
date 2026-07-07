@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useStore } from '@/hooks/useStore';
 import { DBOT_TABS } from '@/constants/bot-contents';
+import { load } from '@/external/bot-skeleton';
+import { save_types } from '@/external/bot-skeleton/constants/save-type';
 import { scanMarkets, ScanResult, Strategy, ScanProgress } from './ai-scanner-service';
 import './ai-scanner.scss';
 
@@ -178,10 +180,51 @@ const AiScanner = () => {
         }
     };
 
-    const handleLoadBot = () => {
+    // Map each strategy to its corresponding XML bot file and display name
+    const STRATEGY_BOT_MAP: Record<Strategy, { xml_file: string; name: string }> = {
+        over1under8: { xml_file: 'frosty_over_under_ai_bot', name: 'Frosty Over/Under AI Bot' },
+        over2under7: { xml_file: 'frosty_over_under_ai_bot', name: 'Frosty Over/Under AI Bot' },
+        over3under6: { xml_file: 'frosty_over_under_ai_bot', name: 'Frosty Over/Under AI Bot' },
+        evenodd:     { xml_file: 'frosty_even_odd_ai_bot',   name: 'Frosty Even/Odd AI Bot'   },
+    };
+
+    const handleLoadBot = async () => {
         if (!bestResult && !selectedSymbol) return;
-        if (store?.dashboard) store.dashboard.setActiveTabIndex(DBOT_TABS.BOT_BUILDER);
-        setIsOpen(false);
+
+        const botInfo = STRATEGY_BOT_MAP[strategy.id];
+        try {
+            const xml_module = await import(`../../xml/${botInfo.xml_file}.xml`);
+            const block_string = xml_module.default;
+
+            if (store?.dashboard) store.dashboard.setActiveTab(DBOT_TABS.BOT_BUILDER);
+            setIsOpen(false);
+
+            const doLoad = async (workspace: any) => {
+                await load({
+                    block_string,
+                    workspace,
+                    file_name: botInfo.name,
+                    from: save_types.LOCAL,
+                    show_snackbar: true,
+                    drop_event: undefined,
+                    strategy_id: undefined,
+                    showIncompatibleStrategyDialog: undefined,
+                });
+            };
+
+            const workspace = (window as any).Blockly?.derivWorkspace;
+            if (workspace) {
+                await doLoad(workspace);
+            } else {
+                setTimeout(async () => {
+                    const ws = (window as any).Blockly?.derivWorkspace;
+                    if (ws) await doLoad(ws);
+                }, 800);
+            }
+        } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error('[AiScanner] Failed to load bot XML:', err);
+        }
     };
 
     const handleClose = () => {
